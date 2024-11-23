@@ -70,7 +70,12 @@ class _GameState extends State<Game> {
             ...heap.map((e) => Positioned(
               left: e.baseX - e.radius / 2,
               top: e.baseY - e.radius / 2,
-              child: widgetOfElement(e),)),
+              child: TapRegion(
+                onTapInside: (event) {
+                  print('inside');
+                  target = Offset(e.baseX, e.baseY);
+                },
+                child: widgetOfElement(e)) ,)),
             centerPointWidget()],
         ),
       )),
