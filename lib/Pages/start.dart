@@ -16,7 +16,7 @@ class StartPage extends StatelessWidget {
           //load map
           //heap = List.generate(5, (index) => MapElement(0, 0, 0, 0, 0, Types.wall).loadFromFile('assets/maps/map$index.json'));
           heap.clear();
-          heap = [maps0, maps1, maps2, maps3, maps4, maps5, maps6, maps7, maps8, maps9];
+          heap = [maps0, maps1, maps2, maps3, maps4, maps5, maps6, maps7, maps8, maps9, maps10, maps11, maps12];
 
 
           Navigator.push(context, MaterialPageRoute(builder: (context) => const Game()));

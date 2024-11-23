@@ -58,16 +58,20 @@ class _GameState extends State<Game> {
           movingCenter = center;
         },
         child: Stack(
-          children: [Container(color: Colors.green,),
-            IconButton(onPressed: () {
-            timer?.cancel();
-            Navigator.pop(context);
-          }, icon: const Icon(Icons.stop)),
+          children: [
+            Container(color: Colors.green,),
+            IconButton(
+              onPressed: () {
+                timer?.cancel();
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.stop)
+            ),
             ...heap.map((e) => Positioned(
-            left: e.baseX,
-            top: e.baseY,
-            child: widgetOfElement(e),
-          )),centerPointWidget()],
+              left: e.baseX - e.radius / 2,
+              top: e.baseY - e.radius / 2,
+              child: widgetOfElement(e),)),
+            centerPointWidget()],
         ),
       )),
     );
@@ -104,26 +108,26 @@ class _GameState extends State<Game> {
     switch (e.type) {
       case Types.wall:
         return Container(
-          width: 10,
-          height: 10,
+          width: e.radius.toDouble(),
+          height: e.radius.toDouble(),
           color: Colors.grey,
         );
       case Types.base:
         return Container(
-          width: 50,
-          height: 50,
+          width: e.radius.toDouble(),
+          height: e.radius.toDouble(),
           color: Colors.blue,
         );
       case Types.mybot:
         return Container(
-          width: 50,
-          height: 50,
+          width: e.radius.toDouble(),
+          height: e.radius.toDouble(),
           color: Colors.green,
         );
       case Types.enemybot:
         return Container(
-          width: 50,
-          height: 50,
+          width: e.radius.toDouble(),
+          height: e.radius.toDouble(),
           color: Colors.red,
         );
     }

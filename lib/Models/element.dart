@@ -5,12 +5,13 @@ class MapElement {
   late double baseX, baseY, speedX, speedY;
   late int level;
   late Types type;
+  late int radius = 10 ;
   
-  MapElement(this.baseX, this.baseY, this.speedX, this.speedY, this.level, this.type);
+  MapElement(this.baseX, this.baseY, this.speedX, this.speedY, this.level, this.type, this.radius);
   
   //serialize
   String toJson() {
-    return '{"baseX":$baseX,"baseY":$baseY,"speedX":$speedX,"speedY":$speedY,"level":$level,"type":${type.name}}';
+    return '{"baseX":$baseX,"baseY":$baseY,"speedX":$speedX,"speedY":$speedY,"level":$level,"type":${type.name},"radius":$radius}';
   }
   //deserialize
   MapElement.fromJson(String json) {
@@ -21,6 +22,7 @@ class MapElement {
     speedY = jsonMap['speedY'];
     level = jsonMap['level'];
     type = Types.values.firstWhere((e) => e.name == jsonMap['type']);
+    radius = jsonMap['radius'];
   }
 
   loadFromFile(String path) {
