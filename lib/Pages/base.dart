@@ -1,5 +1,6 @@
 import 'package:commander/Models/element.dart';
 import 'package:commander/globals.dart';
+import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
 
 class BasePage extends StatefulWidget {
@@ -17,15 +18,21 @@ class _BasePageState extends State<BasePage> {
   bool isAIInstalled = false;
   bool isToCaptureBases = true;
   bool isToDestroyEnemies = true;
+  bool isProducingBotsPermanently = false;
+  int blocksLimit = myBlocks.ceil();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('${widget.base.type.name}: constructing bots'),
+      ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text('Building blocks: ${myBlocks.ceil()}'),
-            const SizedBox(height: 50,),
+            Text('Building blocks: ${blocksLimit.ceil()}'),
+            //const SizedBox(height: 10,),
             Container(
               //we need to construct a robot here by installing modules like engine, weapon, AI.
               width: 100,
@@ -43,14 +50,14 @@ class _BasePageState extends State<BasePage> {
                     onTap: () {
                       if (!isAIInstalled) {
                         //check if we have enough blocks to install AI
-                        if (myBlocks >= 1) {
+                        if (blocksLimit >= 1) {
                           isAIInstalled = true;
-                          myBlocks -= 1;
+                          blocksLimit -= 1;
                         }
                       } else {
                         //uninstall AI
                         isAIInstalled = false;
-                        myBlocks += 1;
+                        blocksLimit += 1;
                       }
                       setState(() {});
                     },
@@ -70,14 +77,14 @@ class _BasePageState extends State<BasePage> {
                     onTap: () {
                       if (!isWeaponInstalled) {
                         //check if we have enough blocks to install weapon
-                        if (myBlocks >= 1) {
+                        if (blocksLimit >= 1) {
                           isWeaponInstalled = true;
-                          myBlocks -= 1;
+                          blocksLimit -= 1;
                         }
                       } else {
                         //uninstall weapon
                         isWeaponInstalled = false;
-                        myBlocks += 1;
+                        blocksLimit += 1;
                       }
                       setState(() {});
                     },
@@ -97,14 +104,14 @@ class _BasePageState extends State<BasePage> {
                     onTap: () {
                       if (!isEngineInstalled) {
                         //check if we have enough blocks to install engine
-                        if (myBlocks >= 1) {
+                        if (blocksLimit >= 1) {
                           isEngineInstalled = true;
-                          myBlocks -= 1;
+                          blocksLimit -= 1;
                         }
                       } else {
                         //uninstall engine
                         isEngineInstalled = false;
-                        myBlocks += 1;
+                        blocksLimit += 1;
                       }
                       setState(() {});
                     },
@@ -176,10 +183,45 @@ class _BasePageState extends State<BasePage> {
                       child: const Center(child: Text('Destroy enemies'))),
                   ),
                 ],
-            ))
+            )),
+            //const SizedBox(height: 20,),
+            //check if we want to produce bots permanently
+            if (isEngineInstalled) SizedBox(
+              width: 300,
+              child: CheckboxListTile(value: isProducingBotsPermanently, onChanged: (value) {
+                setState(() {
+                  isProducingBotsPermanently = value!;
+                });
+              },
+              title: const Text('Produce bots permanently'),
+              dense: true,
+              ),
+            ),
+            //button to start producing bots
+            if (isEngineInstalled) ElevatedButton(onPressed: () {
+              //launch the robots production
+              int level = (isAIInstalled ? 1 : 0) + (isWeaponInstalled ? 1 : 0) + 1;
+              MapElement bot = MapElement(widget.base.baseX, widget.base.baseY, 0, 0, level, Types.mybot, 10, BaseStatus.neutral, isProducingBotsPermanently, isToCaptureBases, isToDestroyEnemies, isAIInstalled, isWeaponInstalled, widget.base.baseX, widget.base.baseY);
+              //if isCaptureBases is true, then we want to find nearest neutral or enemy base and set it as target
+              if (isToCaptureBases) {
+                //find nearest neutral or enemy base
+                MapElement? nearestBase = findNearestBase(widget.base.baseX, widget.base.baseY);
+                if (nearestBase != null && nearestBase.type == Types.base) {
+                  //set target
+                  bot.targetX = nearestBase.baseX;
+                  bot.targetY = nearestBase.baseY;
+                }
+              }
+              heap.add(bot);
+              myBlocks -= level;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Launch')),
+
           ],
         ),
       ),
     );
   }
 }
+

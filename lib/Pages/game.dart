@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:commander/Models/element.dart';
 import 'package:commander/Pages/base.dart';
 import 'package:commander/globals.dart';
+import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -81,7 +82,7 @@ class _GameState extends State<Game> {
                   target = Offset(e.baseX, e.baseY);
                 },
                 child: widgetOfElement(e)) ,)),
-            centerPointWidget(),
+            //centerPointWidget(),
             //player status line at bottom of screen
             statusWidget()
           ],
@@ -91,6 +92,12 @@ class _GameState extends State<Game> {
   }
   
   Future<void> update() async {
+    //check for win
+    if (myBasesCount == heap.where((element) => element.type == Types.base).length) {
+      timer?.cancel();
+      print('win');
+      return;
+    }
     //start moving to target and stop when reached
     //if target is null, do nothing
     //if (targetElement != null) target = Offset(targetElement!.baseX, targetElement!.baseY);
@@ -124,8 +131,45 @@ class _GameState extends State<Game> {
       }
     }
     //calculate blocks income
-    
     myBlocks += (myBasesCount / 5000);
+
+    //update bots movement
+    heap.where((e) => e.type == Types.mybot).forEach((mybot) {
+      if (mybot.isToCaptureBases) {
+        //find nearest base
+        MapElement? nearestBase = findNearestBase(mybot.baseX, mybot.baseY);
+        //if nearestBase != null set target to nearest base
+        if (nearestBase != null) {
+          mybot.targetX = nearestBase.baseX;
+          mybot.targetY = nearestBase.baseY;
+          botsTargetsMap[mybot] = nearestBase;
+        }
+        //set isToCaptureBases to false
+        mybot.isToCaptureBases = false;
+      }
+      print('bot target is ${mybot.targetX}, ${mybot.targetY}');
+      //calculate distance to target
+      double distance = sqrt(pow(mybot.baseX - mybot.targetX, 2) + pow(mybot.baseY - mybot.targetY, 2));
+      //calculate angle to target
+      double angle = atan2(mybot.targetY - mybot.baseY, mybot.targetX - mybot.baseX);
+      //calculate speed
+      double speed = botSpeed;
+      //calculate dx and dy
+      double dx = cos(angle) * speed;
+      double dy = sin(angle) * speed;
+      //move bot
+      mybot.baseX += dx;
+      mybot.baseY += dy;
+      //if bot is close to target, set target to null
+      if (distance < 1) {
+        print('bot reached target');
+        //set target base status to captured
+        botsTargetsMap[mybot]?.baseStatus = BaseStatus.mine;
+        //remove bot from botsTargetsMap
+        botsTargetsMap.remove(mybot);
+        mybot.isToCaptureBases = true;
+      }
+    });
   }
 
   widgetOfElement(MapElement e) {
@@ -148,6 +192,7 @@ class _GameState extends State<Game> {
           height: e.radius.toDouble(),
           //color: Colors.white,
           decoration: BoxDecoration(
+            color: e.baseStatus == BaseStatus.mine ? Colors.green : Colors.red,
             border: Border.all(
               color: Colors.black,
               width: 2.0
@@ -197,6 +242,7 @@ class _GameState extends State<Game> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text('Blocks: ${myBlocks.ceil()}'),
+            Text('Bots: ${heap.where((element) => element.type == Types.mybot).length}'),
             Text('Captured Bases: $myBasesCount'),
             Text('All bases: ${heap.where((element) => element.type == Types.base).length}'),
           ],
