@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commander/Models/element.dart';
+import 'package:commander/Pages/base.dart';
 import 'package:commander/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -20,6 +21,7 @@ class _GameState extends State<Game> {
   int lastBlocksIncomeTick = 0;
   Offset? center, target, movingCenter;
   MapElement? targetElement;
+  int get myBasesCount => heap.where((e) => e.baseStatus == BaseStatus.mine).length;
 
   @override
   void initState() {
@@ -79,13 +81,16 @@ class _GameState extends State<Game> {
                   target = Offset(e.baseX, e.baseY);
                 },
                 child: widgetOfElement(e)) ,)),
-            centerPointWidget()],
+            centerPointWidget(),
+            //player status line at bottom of screen
+            statusWidget()
+          ],
         ),
       )),
     );
   }
   
-  void update() {
+  Future<void> update() async {
     //start moving to target and stop when reached
     //if target is null, do nothing
     //if (targetElement != null) target = Offset(targetElement!.baseX, targetElement!.baseY);
@@ -111,15 +116,16 @@ class _GameState extends State<Game> {
         if (targetElement != null) {
           //we reached element. if it is base open base menu operation
           if (targetElement!.type == Types.base) {
-            targetElement!.baseStatus = BaseStatus.mine;
+            //targetElement!.baseStatus = BaseStatus.mine;
+            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => BasePage(base: targetElement!)));
           }
           targetElement = null;
         }
       }
     }
     //calculate blocks income
-    int myBasesCount = heap.takeWhile((e) => e.baseStatus == BaseStatus.mine).length;
-    myBlocks += (myBasesCount / 10);
+    
+    myBlocks += (myBasesCount / 5000);
   }
 
   widgetOfElement(MapElement e) {
@@ -175,6 +181,26 @@ class _GameState extends State<Game> {
         width: 10,
         height: 10,
         //color: Colors.red,
+      ),
+    );
+  }
+  
+  statusWidget() {
+    return Positioned(
+      left: 0,
+      bottom: 0,
+      child: Container(
+        width: MediaQuery.sizeOf(context).width,
+        height: 50,
+        color: Colors.grey,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text('Blocks: ${myBlocks.ceil()}'),
+            Text('Captured Bases: $myBasesCount'),
+            Text('All bases: ${heap.where((element) => element.type == Types.base).length}'),
+          ],
+        ),
       ),
     );
   }
