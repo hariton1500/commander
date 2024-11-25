@@ -15,4 +15,4 @@ MapElement maps10 = MapElement(100, 150, 0, 0, 1, Types.base, 20, BaseStatus.neu
 MapElement maps11 = MapElement(110, 200, 0, 0, 1, Types.base, 20, BaseStatus.neutral, false, false, false, false, false, 0, 0);
 MapElement maps12 = MapElement(120, 60, 0, 0, 1, Types.base, 20, BaseStatus.neutral, false, false, false, false, false, 0, 0);
 //add 1 mybot
-MapElement maps13 = MapElement(50, 50, 0, 0, 1, Types.mybot, 10, BaseStatus.neutral, false, true, false, false, false, 0, 0);
+MapElement maps13 = MapElement(50, 50, 0, 0, 1, Types.mybot, 10, BaseStatus.neutral, false, false, false, false, false, 50, 50);

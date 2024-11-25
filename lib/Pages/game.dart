@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commander/Models/element.dart';
 import 'package:commander/Pages/base.dart';
+import 'package:commander/Pages/mybot.dart';
 import 'package:commander/globals.dart';
 import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
@@ -55,38 +56,23 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     center = Offset(MediaQuery.sizeOf(context).width / 2, MediaQuery.sizeOf(context).height / 2);
     return Scaffold(
-      body: SafeArea(child: GestureDetector(
-        onTapDown: (details) {
-          print(details.localPosition);
-          print(center);
-          target = targetElement != null ? Offset(targetElement!.baseX, targetElement!.baseY) : details.localPosition;
-          movingCenter = center;
-        },
-        child: Stack(
-          children: [
-            Container(color: Colors.white,),
-            IconButton(
-              onPressed: () {
-                timer?.cancel();
-                Navigator.pop(context);
+      body: SafeArea(child: Stack(
+        children: [
+          Container(color: Colors.white,),
+          ...heap.map((e) => Positioned(
+            left: e.baseX - e.radius / 2,
+            top: e.baseY - e.radius / 2,
+            child: TapRegion(
+              onTapInside: (event) {
+                //print('inside');
+                targetElement = e;
+                target = Offset(e.baseX, e.baseY);
               },
-              icon: const Icon(Icons.stop)
-            ),
-            ...heap.map((e) => Positioned(
-              left: e.baseX - e.radius / 2,
-              top: e.baseY - e.radius / 2,
-              child: TapRegion(
-                onTapInside: (event) {
-                  print('inside');
-                  targetElement = e;
-                  target = Offset(e.baseX, e.baseY);
-                },
-                child: widgetOfElement(e)) ,)),
-            //centerPointWidget(),
-            //player status line at bottom of screen
-            statusWidget()
-          ],
-        ),
+              child: widgetOfElement(e)) ,)),
+          //centerPointWidget(),
+          //player status line at bottom of screen
+          statusWidget()
+        ],
       )),
     );
   }
@@ -98,10 +84,10 @@ class _GameState extends State<Game> {
       print('win');
       return;
     }
+    //player moving, actualy moving a map and all on it
     //start moving to target and stop when reached
     //if target is null, do nothing
-    //if (targetElement != null) target = Offset(targetElement!.baseX, targetElement!.baseY);
-    //if target is not null, move to target
+    /*
     if (target != null) {
       double x = target!.dx - center!.dx;
       double y = target!.dy - center!.dy;
@@ -129,15 +115,16 @@ class _GameState extends State<Game> {
           targetElement = null;
         }
       }
-    }
+    }*/
     //calculate blocks income
     myBlocks += (myBasesCount / 5000);
 
     //update bots movement
-    heap.where((e) => e.type == Types.mybot).forEach((mybot) {
+    heap.where((e) => e.type == Types.mybot && e.isToCaptureBases).forEach((mybot) {
       if (mybot.isToCaptureBases) {
+        print('start find base to capture for bot ${mybot.hashCode}');
         //find nearest base
-        MapElement? nearestBase = findNearestBase(mybot.baseX, mybot.baseY);
+        MapElement? nearestBase = !botsTargetsMap.containsKey(mybot) ? findNearestBase(forBot: mybot) : null;
         //if nearestBase != null set target to nearest base
         if (nearestBase != null) {
           mybot.targetX = nearestBase.baseX;
@@ -145,7 +132,7 @@ class _GameState extends State<Game> {
           botsTargetsMap[mybot] = nearestBase;
         }
         //set isToCaptureBases to false
-        mybot.isToCaptureBases = false;
+        //mybot.isToCaptureBases = false;
       }
       print('bot target is ${mybot.targetX}, ${mybot.targetY}');
       //calculate distance to target
@@ -187,23 +174,33 @@ class _GameState extends State<Game> {
           ),
         );
       case Types.base:
-        return Container(
-          width: e.radius.toDouble(),
-          height: e.radius.toDouble(),
-          //color: Colors.white,
-          decoration: BoxDecoration(
-            color: e.baseStatus == BaseStatus.mine ? Colors.green : Colors.red,
-            border: Border.all(
-              color: Colors.black,
-              width: 2.0
-            )
+        return InkWell(
+          onTap: () {
+            if (e.baseStatus == BaseStatus.mine) Navigator.of(context).push(MaterialPageRoute(builder: (context) => BasePage(base: e)));
+          },
+          child: Container(
+            width: e.radius.toDouble(),
+            height: e.radius.toDouble(),
+            //color: Colors.white,
+            decoration: BoxDecoration(
+              color: e.baseStatus == BaseStatus.mine ? Colors.green : Colors.red,
+              border: Border.all(
+                color: Colors.black,
+                width: 2.0
+              )
+            ),
           ),
         );
       case Types.mybot:
-        return Container(
-          width: e.radius.toDouble(),
-          height: e.radius.toDouble(),
-          color: Colors.green,
+        return InkWell(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBotPage(bot: e)));
+          },
+          child: Container(
+            width: e.radius.toDouble(),
+            height: e.radius.toDouble(),
+            color: Colors.green,
+          ),
         );
       case Types.enemybot:
         return Container(

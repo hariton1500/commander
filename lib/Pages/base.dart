@@ -205,7 +205,7 @@ class _BasePageState extends State<BasePage> {
               //if isCaptureBases is true, then we want to find nearest neutral or enemy base and set it as target
               if (isToCaptureBases) {
                 //find nearest neutral or enemy base
-                MapElement? nearestBase = findNearestBase(widget.base.baseX, widget.base.baseY);
+                MapElement? nearestBase = findNearestBase(forBot: bot);
                 if (nearestBase != null && nearestBase.type == Types.base) {
                   //set target
                   bot.targetX = nearestBase.baseX;
