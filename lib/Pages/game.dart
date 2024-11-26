@@ -84,42 +84,10 @@ class _GameState extends State<Game> {
       print('win');
       return;
     }
-    //player moving, actualy moving a map and all on it
-    //start moving to target and stop when reached
-    //if target is null, do nothing
-    /*
-    if (target != null) {
-      double x = target!.dx - center!.dx;
-      double y = target!.dy - center!.dy;
-      double angle = atan2(y, x);
-      double speed = 1;
-      double dx = cos(angle) * speed;
-      double dy = sin(angle) * speed;
-      movingCenter = Offset(movingCenter!.dx + dx, movingCenter!.dy + dy);
-      //print(movingCenter!.direction);
-      for (int i = 0; i < heap.length; i++) {
-        heap[i].baseX -= dx;
-        heap[i].baseY -= dy;
-      }
-    }
-    //if target is reached, set target to null
-    if (target != null) {
-      if (movingCenter!.dx - target!.dx < 1 && movingCenter!.dy - target!.dy < 1) {
-        target = null;
-        if (targetElement != null) {
-          //we reached element. if it is base open base menu operation
-          if (targetElement!.type == Types.base) {
-            //targetElement!.baseStatus = BaseStatus.mine;
-            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => BasePage(base: targetElement!)));
-          }
-          targetElement = null;
-        }
-      }
-    }*/
     //calculate blocks income
     myBlocks += (myBasesCount / 5000);
 
-    //update bots movement
+    //update my bots movement
     heap.where((e) => e.type == Types.mybot && e.isToCaptureBases).forEach((mybot) {
       if (mybot.isToCaptureBases) {
         print('start find base to capture for bot ${mybot.hashCode}');
@@ -157,6 +125,59 @@ class _GameState extends State<Game> {
         mybot.isToCaptureBases = true;
       }
     });
+
+
+    //update enemy bots movement
+    heap.where((e) => e.type == Types.enemybot).forEach((enemybot) {
+      if (enemybot.isToCaptureBases) {
+        print('start find base to capture for bot ${enemybot.hashCode}');
+        //find nearest base
+        MapElement? nearestBase = !botsTargetsMap.containsKey(enemybot) ? findNearestBase(forBot: enemybot) : null;
+        //if nearestBase != null set target to nearest base
+        if (nearestBase != null) {
+          enemybot.targetX = nearestBase.baseX;
+          enemybot.targetY = nearestBase.baseY;
+          enemybotsTargetsMap[enemybot] = nearestBase;
+        }
+        //set isToCaptureBases to false
+        //mybot.isToCaptureBases = false;
+      }
+      print('enemy bot target is ${enemybot.targetX}, ${enemybot.targetY}');
+      //calculate distance to target
+      double distance = sqrt(pow(enemybot.baseX - enemybot.targetX, 2) + pow(enemybot.baseY - enemybot.targetY, 2));
+      //calculate angle to target
+      double angle = atan2(enemybot.targetY - enemybot.baseY, enemybot.targetX - enemybot.baseX);
+      //calculate speed
+      double speed = botSpeed;
+      //calculate dx and dy
+      double dx = cos(angle) * speed;
+      double dy = sin(angle) * speed;
+      //move bot
+      enemybot.baseX += dx;
+      enemybot.baseY += dy;
+      //if bot is close to target, set target to null
+      if (distance < 1) {
+        print('bot reached target');
+        //set target base status to captured
+        enemybotsTargetsMap[enemybot]?.baseStatus = BaseStatus.enemies;
+        //remove bot from botsTargetsMap
+        botsTargetsMap.remove(enemybot);
+        enemybot.isToCaptureBases = true;
+      }
+    });
+
+    //shooting logic
+    //check if bot is close to enemy bot
+    heap.where((e) => e.type == Types.mybot).forEach((mybot) {
+      heap.where((e) => e.type == Types.enemybot).forEach((enemybot) {
+        double distance = sqrt(pow(enemybot.baseX - mybot.baseX, 2) + pow(enemybot.baseY - mybot.baseY, 2));
+        if (distance < 10) {
+          //shoot enemy
+        }
+      });
+    });
+
+
   }
 
   widgetOfElement(MapElement e) {
@@ -183,7 +204,7 @@ class _GameState extends State<Game> {
             height: e.radius.toDouble(),
             //color: Colors.white,
             decoration: BoxDecoration(
-              color: e.baseStatus == BaseStatus.mine ? Colors.green : Colors.red,
+              color: getColor(e),
               border: Border.all(
                 color: Colors.black,
                 width: 2.0
@@ -246,5 +267,16 @@ class _GameState extends State<Game> {
         ),
       ),
     );
+  }
+}
+
+Color getColor(MapElement base) {
+  switch (base.baseStatus) {
+    case BaseStatus.mine:
+      return Colors.green;
+    case BaseStatus.enemies:
+      return Colors.red;
+    case BaseStatus.neutral:
+      return Colors.grey;
   }
 }
