@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:commander/Models/element.dart';
 import 'package:commander/Pages/base.dart';
 import 'package:commander/Pages/mybot.dart';
+import 'package:commander/Updates/addtoshootingmap.dart';
+import 'package:commander/Updates/enemybots.dart';
+import 'package:commander/Updates/mybots.dart';
+import 'package:commander/Updates/shooting.dart';
 import 'package:commander/globals.dart';
-import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -31,18 +32,8 @@ class _GameState extends State<Game> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       timer = Timer.periodic(const Duration(milliseconds: 10), (t) {
         ticks++;
-        //update
         update();
-        //draw
-        //check for collision
-        //check for win
-        //check for lose
-        //check for draw
-        //check for end of game
-        //check for restart
-        //check for quit
         setState(() {});
-        //print(ticks);
       });
     });
   }
@@ -69,7 +60,6 @@ class _GameState extends State<Game> {
                 target = Offset(e.baseX, e.baseY);
               },
               child: widgetOfElement(e)) ,)),
-          //centerPointWidget(),
           //player status line at bottom of screen
           statusWidget()
         ],
@@ -88,96 +78,15 @@ class _GameState extends State<Game> {
     myBlocks += (myBasesCount / 5000);
 
     //update my bots movement
-    heap.where((e) => e.type == Types.mybot && e.isToCaptureBases).forEach((mybot) {
-      if (mybot.isToCaptureBases) {
-        print('start find base to capture for bot ${mybot.hashCode}');
-        //find nearest base
-        MapElement? nearestBase = !botsTargetsMap.containsKey(mybot) ? findNearestBase(forBot: mybot) : null;
-        //if nearestBase != null set target to nearest base
-        if (nearestBase != null) {
-          mybot.targetX = nearestBase.baseX;
-          mybot.targetY = nearestBase.baseY;
-          botsTargetsMap[mybot] = nearestBase;
-        }
-        //set isToCaptureBases to false
-        //mybot.isToCaptureBases = false;
-      }
-      print('bot target is ${mybot.targetX}, ${mybot.targetY}');
-      //calculate distance to target
-      double distance = sqrt(pow(mybot.baseX - mybot.targetX, 2) + pow(mybot.baseY - mybot.targetY, 2));
-      //calculate angle to target
-      double angle = atan2(mybot.targetY - mybot.baseY, mybot.targetX - mybot.baseX);
-      //calculate speed
-      double speed = botSpeed;
-      //calculate dx and dy
-      double dx = cos(angle) * speed;
-      double dy = sin(angle) * speed;
-      //move bot
-      mybot.baseX += dx;
-      mybot.baseY += dy;
-      //if bot is close to target, set target to null
-      if (distance < 1) {
-        print('bot reached target');
-        //set target base status to captured
-        botsTargetsMap[mybot]?.baseStatus = BaseStatus.mine;
-        //remove bot from botsTargetsMap
-        botsTargetsMap.remove(mybot);
-        mybot.isToCaptureBases = true;
-      }
-    });
-
+    myBotsUpdate();
 
     //update enemy bots movement
-    heap.where((e) => e.type == Types.enemybot).forEach((enemybot) {
-      if (enemybot.isToCaptureBases) {
-        print('start find base to capture for bot ${enemybot.hashCode}');
-        //find nearest base
-        MapElement? nearestBase = !botsTargetsMap.containsKey(enemybot) ? findNearestBase(forBot: enemybot) : null;
-        //if nearestBase != null set target to nearest base
-        if (nearestBase != null) {
-          enemybot.targetX = nearestBase.baseX;
-          enemybot.targetY = nearestBase.baseY;
-          enemybotsTargetsMap[enemybot] = nearestBase;
-        }
-        //set isToCaptureBases to false
-        //mybot.isToCaptureBases = false;
-      }
-      print('enemy bot target is ${enemybot.targetX}, ${enemybot.targetY}');
-      //calculate distance to target
-      double distance = sqrt(pow(enemybot.baseX - enemybot.targetX, 2) + pow(enemybot.baseY - enemybot.targetY, 2));
-      //calculate angle to target
-      double angle = atan2(enemybot.targetY - enemybot.baseY, enemybot.targetX - enemybot.baseX);
-      //calculate speed
-      double speed = botSpeed;
-      //calculate dx and dy
-      double dx = cos(angle) * speed;
-      double dy = sin(angle) * speed;
-      //move bot
-      enemybot.baseX += dx;
-      enemybot.baseY += dy;
-      //if bot is close to target, set target to null
-      if (distance < 1) {
-        print('bot reached target');
-        //set target base status to captured
-        enemybotsTargetsMap[enemybot]?.baseStatus = BaseStatus.enemies;
-        //remove bot from botsTargetsMap
-        botsTargetsMap.remove(enemybot);
-        enemybot.isToCaptureBases = true;
-      }
-    });
+    enemyBotsUpdate();
 
     //shooting logic
-    //check if bot is close to enemy bot
-    heap.where((e) => e.type == Types.mybot).forEach((mybot) {
-      heap.where((e) => e.type == Types.enemybot).forEach((enemybot) {
-        double distance = sqrt(pow(enemybot.baseX - mybot.baseX, 2) + pow(enemybot.baseY - mybot.baseY, 2));
-        if (distance < 10) {
-          //shoot enemy
-        }
-      });
-    });
-
-
+    //check if my bot is close to enemy bot
+    addToShootingMap();
+    shooting();
   }
 
   widgetOfElement(MapElement e) {
