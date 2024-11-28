@@ -5,25 +5,25 @@ import 'package:commander/globals.dart';
 import 'package:commander/helpers.dart';
 
 enemyBotsUpdate() {
-  heap.where((e) => e.type == Types.enemybot).forEach((enemybot) {
+  heap.whereType<EnemyBot>().forEach((enemybot) {
     if (enemybot.isToCaptureBases) {
       print('start find base to capture for bot ${enemybot.hashCode}');
       //find nearest base
       MapElement? nearestBase = !botsTargetsMap.containsKey(enemybot) ? findNearestBase(forBot: enemybot) : null;
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
-        enemybot.targetX = nearestBase.baseX;
-        enemybot.targetY = nearestBase.baseY;
+        enemybot.target = nearestBase;
+        //enemybot.targetY = nearestBase.baseY;
         enemybotsTargetsMap[enemybot] = nearestBase;
       }
       //set isToCaptureBases to false
       //mybot.isToCaptureBases = false;
     }
-    print('enemy bot target is ${enemybot.targetX}, ${enemybot.targetY}');
+    print('enemy bot target is ${enemybot.target}, ${enemybot.target}');
     //calculate distance to target
-    double distance = sqrt(pow(enemybot.baseX - enemybot.targetX, 2) + pow(enemybot.baseY - enemybot.targetY, 2));
+    double distance = sqrt(pow(enemybot.baseX - enemybot.target!.baseX, 2) + pow(enemybot.baseY - enemybot.target!.baseY, 2));
     //calculate angle to target
-    double angle = atan2(enemybot.targetY - enemybot.baseY, enemybot.targetX - enemybot.baseX);
+    double angle = atan2(enemybot.target!.baseY - enemybot.baseY, enemybot.target!.baseX - enemybot.baseX);
     //calculate speed
     double speed = botSpeed;
     //calculate dx and dy
@@ -36,7 +36,7 @@ enemyBotsUpdate() {
     if (distance < 1) {
       print('bot reached target');
       //set target base status to captured
-      enemybotsTargetsMap[enemybot]?.baseStatus = BaseStatus.enemies;
+      (enemybotsTargetsMap[enemybot] as Base).baseStatus = BaseStatus.enemies;
       //remove bot from botsTargetsMap
       botsTargetsMap.remove(enemybot);
       enemybot.isToCaptureBases = true;

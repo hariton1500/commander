@@ -201,15 +201,15 @@ class _BasePageState extends State<BasePage> {
             if (isEngineInstalled) ElevatedButton(onPressed: () {
               //launch the robots production
               int level = (isAIInstalled ? 1 : 0) + (isWeaponInstalled ? 1 : 0) + 1;
-              MapElement bot = MapElement(widget.base.baseX, widget.base.baseY, 0, 0, level, Types.mybot, 10, BaseStatus.neutral, isProducingBotsPermanently, isToCaptureBases, isToDestroyEnemies, isAIInstalled, isWeaponInstalled, widget.base.baseX, widget.base.baseY);
+              MyBot bot = MyBot(baseX: widget.base.baseX, baseY: widget.base.baseY, speedX: 0, speedY: 0, level: 1);
               //if isCaptureBases is true, then we want to find nearest neutral or enemy base and set it as target
               if (isToCaptureBases) {
                 //find nearest neutral or enemy base
                 MapElement? nearestBase = findNearestBase(forBot: bot);
-                if (nearestBase != null && nearestBase.type == Types.base) {
+                if (nearestBase != null && nearestBase is Base) {
                   //set target
-                  bot.targetX = nearestBase.baseX;
-                  bot.targetY = nearestBase.baseY;
+                  bot.target = nearestBase;
+                  //bot.targetY = nearestBase.baseY;
                 }
               }
               heap.add(bot);

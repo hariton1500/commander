@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:commander/Models/element.dart';
-import 'package:commander/Pages/base.dart';
-import 'package:commander/Pages/mybot.dart';
 import 'package:commander/Updates/addtoshootingmap.dart';
 import 'package:commander/Updates/enemybots.dart';
 import 'package:commander/Updates/mybots.dart';
@@ -24,7 +22,7 @@ class _GameState extends State<Game> {
   int lastBlocksIncomeTick = 0;
   Offset? center, target, movingCenter;
   MapElement? targetElement;
-  int get myBasesCount => heap.where((e) => e.baseStatus == BaseStatus.mine).length;
+  int get myBasesCount => heap.where((element) => element is Base && element.baseStatus == BaseStatus.mine).length;
 
   @override
   void initState() {
@@ -59,7 +57,7 @@ class _GameState extends State<Game> {
                 targetElement = e;
                 target = Offset(e.baseX, e.baseY);
               },
-              child: widgetOfElement(e)) ,)),
+              child: e.widget) ,)),
           //player status line at bottom of screen
           statusWidget()
         ],
@@ -89,6 +87,7 @@ class _GameState extends State<Game> {
     shooting();
   }
 
+  /*
   widgetOfElement(MapElement e) {
     switch (e.type) {
       case Types.wall:
@@ -138,8 +137,14 @@ class _GameState extends State<Game> {
           height: e.radius.toDouble(),
           color: Colors.red,
         );
+      case Types.rocket:
+        return Container(
+          width: e.radius.toDouble(),
+          height: e.radius.toDouble(),
+          color: Colors.blue,
+        );
     }
-  }
+  }*/
   
   centerPointWidget() {
     return Positioned(
@@ -176,16 +181,5 @@ class _GameState extends State<Game> {
         ),
       ),
     );
-  }
-}
-
-Color getColor(MapElement base) {
-  switch (base.baseStatus) {
-    case BaseStatus.mine:
-      return Colors.green;
-    case BaseStatus.enemies:
-      return Colors.red;
-    case BaseStatus.neutral:
-      return Colors.grey;
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class MyBotPage extends StatefulWidget {
   const MyBotPage({super.key, required this.bot});
-  final MapElement bot;
+  final MyBot bot;
 
   @override
   State<MyBotPage> createState() => _MyBotPageState();
