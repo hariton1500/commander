@@ -9,17 +9,17 @@ myBotsUpdate() {
     if (mybot.isToCaptureBases) {
       print('start find base to capture for bot ${mybot.hashCode}');
       //find nearest base
-      MapElement? nearestBase = !botsTargetsMap.containsKey(mybot) ? findNearestBase(forBot: mybot) : null;
+      Base? nearestBase = (!captureMyBotsTargetsMap.containsKey(mybot) ? findNearestNotMyBase(forBot: mybot) : null) as Base?;
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
         mybot.target = nearestBase;
         //mybot.targetY = nearestBase.baseY;
-        botsTargetsMap[mybot] = nearestBase;
+        captureMyBotsTargetsMap[mybot] = nearestBase;
       }
       //set isToCaptureBases to false
       //mybot.isToCaptureBases = false;
     }
-    print('bot target is ${mybot.target!.baseX}, ${mybot.target!.baseY}');
+    print('bot target is ${mybot.target?.baseX}, ${mybot.target?.baseY}');
     //calculate distance to target
     double distance = sqrt(pow(mybot.baseX - mybot.target!.baseX, 2) + pow(mybot.baseY - mybot.target!.baseY, 2));
     //calculate angle to target
@@ -36,9 +36,9 @@ myBotsUpdate() {
     if (distance < 1) {
       print('bot reached target');
       //set target base status to captured
-      (botsTargetsMap[mybot] as Base).baseStatus = BaseStatus.mine;
+      (captureMyBotsTargetsMap[mybot] as Base).baseStatus = BaseStatus.mine;
       //remove bot from botsTargetsMap
-      botsTargetsMap.remove(mybot);
+      captureMyBotsTargetsMap.remove(mybot);
       mybot.isToCaptureBases = true;
     }
   });

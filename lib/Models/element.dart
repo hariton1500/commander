@@ -43,20 +43,6 @@ class MapElement {
 class Base extends MapElement {
   BaseStatus baseStatus;
   bool isProducingBotsPermanently;
-  /*
-  @override
-  final widget = Container(
-            width: 20,
-            height: 20,
-            //color: Colors.white,
-            decoration: BoxDecoration(
-              color: getColor(baseStatus),
-              border: Border.all(
-                color: Colors.black,
-                width: 2.0
-              )
-            ),
-          );*/
   Base({required baseX, required baseY, required level, required this.baseStatus, required this.isProducingBotsPermanently}) : super(baseX: baseX, baseY: baseY, speedX: 0, speedY: 0, level: level, type: Types.base, radius: 20, widget: Container(
             width: 20,
             height: 20,

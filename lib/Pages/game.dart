@@ -65,7 +65,7 @@ class _GameState extends State<Game> {
     );
   }
   
-  Future<void> update() async {
+  update() {
     //check for win
     if (myBasesCount == heap.where((element) => element.type == Types.base).length) {
       timer?.cancel();

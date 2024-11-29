@@ -9,12 +9,12 @@ enemyBotsUpdate() {
     if (enemybot.isToCaptureBases) {
       print('start find base to capture for bot ${enemybot.hashCode}');
       //find nearest base
-      MapElement? nearestBase = !botsTargetsMap.containsKey(enemybot) ? findNearestBase(forBot: enemybot) : null;
+      Base? nearestBase = (!captureEnemybotsTargetsMap.containsKey(enemybot) ? findNearestNotEnemyBase(forBot: enemybot) : null) as Base?;
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
         enemybot.target = nearestBase;
         //enemybot.targetY = nearestBase.baseY;
-        enemybotsTargetsMap[enemybot] = nearestBase;
+        captureEnemybotsTargetsMap[enemybot] = nearestBase;
       }
       //set isToCaptureBases to false
       //mybot.isToCaptureBases = false;
@@ -36,9 +36,9 @@ enemyBotsUpdate() {
     if (distance < 1) {
       print('bot reached target');
       //set target base status to captured
-      (enemybotsTargetsMap[enemybot] as Base).baseStatus = BaseStatus.enemies;
+      (captureEnemybotsTargetsMap[enemybot])?.baseStatus = BaseStatus.enemies;
       //remove bot from botsTargetsMap
-      botsTargetsMap.remove(enemybot);
+      captureEnemybotsTargetsMap.remove(enemybot);
       enemybot.isToCaptureBases = true;
     }
   });
