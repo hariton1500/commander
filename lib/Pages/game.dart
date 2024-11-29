@@ -48,7 +48,7 @@ class _GameState extends State<Game> {
       body: SafeArea(child: Stack(
         children: [
           Container(color: Colors.white,),
-          ...heap.map((e) => Positioned(
+          ...heap.whereType<Base>().map((e) => Positioned(
             left: e.baseX - e.radius / 2,
             top: e.baseY - e.radius / 2,
             child: TapRegion(
@@ -67,6 +67,7 @@ class _GameState extends State<Game> {
   
   update() {
     //check for win
+    print('check for win');
     if (myBasesCount == heap.where((element) => element.type == Types.base).length) {
       timer?.cancel();
       print('win');
