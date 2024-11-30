@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:commander/Models/element.dart';
+import 'package:commander/Pages/base.dart';
+import 'package:commander/Pages/mybot.dart';
 import 'package:commander/Updates/addtoshootingmap.dart';
 import 'package:commander/Updates/enemybots.dart';
 import 'package:commander/Updates/mybots.dart';
@@ -49,6 +51,28 @@ class _GameState extends State<Game> {
         children: [
           Container(color: Colors.white,),
           ...heap.whereType<Base>().map((e) => Positioned(
+            left: e.baseX - e.radius / 2,
+            top: e.baseY - e.radius / 2,
+            child: InkWell(
+              onTap: () {
+                //print('inside');
+                //targetElement = e;
+                //target = Offset(e.baseX, e.baseY);
+                if (e.baseStatus == BaseStatus.mine) Navigator.of(context).push(MaterialPageRoute(builder: (context) => BasePage(base: e)));
+              },
+              child: e.widget) ,)),
+          ...heap.whereType<MyBot>().map((e) => Positioned(
+            left: e.baseX - e.radius / 2,
+            top: e.baseY - e.radius / 2,
+            child: InkWell(
+              onTap: () {
+                //print('inside');
+                //targetElement = e;
+                //target = Offset(e.baseX, e.baseY);
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBotPage(bot: e)));
+              },
+              child: e.widget) ,)),
+          ...heap.whereType<EnemyBot>().map((e) => Positioned(
             left: e.baseX - e.radius / 2,
             top: e.baseY - e.radius / 2,
             child: TapRegion(
