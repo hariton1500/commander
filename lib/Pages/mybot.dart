@@ -15,7 +15,7 @@ class _MyBotPageState extends State<MyBotPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
     isToCaptureBases = widget.bot.isToCaptureBases;
     isToDestroyEnemies = widget.bot.isToDestroyEnemies;

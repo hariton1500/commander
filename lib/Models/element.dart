@@ -3,8 +3,8 @@ import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
 
 class MapElement {
-  double baseX, baseY;
-  double speedX, speedY;
+  num baseX, baseY;
+  num speedX, speedY;
   int level;
   Types type;
   int radius;
@@ -34,6 +34,11 @@ class Base extends MapElement {
             ),
           );
   Base({required baseX, required baseY, required level, required this.baseStatus, required this.isProducingBotsPermanently}) : super(baseX: baseX, baseY: baseY, speedX: 0, speedY: 0, level: level, type: Types.base, radius: 20);
+  @override
+  String toString() {
+    return 'Base($baseX, $baseY, $level, $baseStatus, $isProducingBotsPermanently)';
+    //return super.toString();
+  }
 }
 
 class Bot extends MapElement {
@@ -51,10 +56,20 @@ class MyBot extends Bot {
   Widget get widget => Container(
             width: 10,
             height: 10,
-            color: botColor,
+            //color: botColor,
+            decoration: BoxDecoration(
+              color: botColor,
+              border: Border.all(
+                color: Colors.black,
+                width: 1.0
+              )
+            )
           );
   MyBot({required baseX, required baseY, required speedX, required speedY, required level}) : super(baseX: baseX, baseY: baseY, speedX: speedX, speedY: speedY, level: level, isAIInstalled: false, isWeaponInstalled: false, isToCaptureBases: false, isToDestroyEnemies: false,);
-  
+  @override
+  String toString() {
+    return 'MyBot($baseX, $baseY, $speedX, $speedY, $level, $isAIInstalled, $isWeaponInstalled, $isToCaptureBases, $isToDestroyEnemies)';
+  }
 }
 
 class EnemyBot extends Bot {

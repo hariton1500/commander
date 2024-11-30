@@ -1,11 +1,12 @@
+import 'dart:async';
+
 import 'package:commander/Models/element.dart';
 import 'package:commander/globals.dart';
-import 'package:commander/helpers.dart';
 import 'package:flutter/material.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key, required this.base});
-  final MapElement base;
+  final Base base;
 
   @override
   State<BasePage> createState() => _BasePageState();
@@ -20,7 +21,26 @@ class _BasePageState extends State<BasePage> {
   bool isToDestroyEnemies = true;
   bool isProducingBotsPermanently = false;
   int blocksLimit = myBlocks.ceil();
+  Timer? timer;
 
+  @override
+  void initState() {
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      
+        setState(() {
+          blocksLimit = myBlocks.ceil();
+        });
+      
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +56,7 @@ class _BasePageState extends State<BasePage> {
             Container(
               //we need to construct a robot here by installing modules like engine, weapon, AI.
               width: 100,
-              height: 304,
+              height: 154,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.black,
@@ -69,7 +89,7 @@ class _BasePageState extends State<BasePage> {
                           width: 1.0
                         )
                       ),
-                      height: 100,
+                      height: 50,
                       width: 100,
                       child: const Center(child: Text('AI'))),
                   ),
@@ -96,7 +116,7 @@ class _BasePageState extends State<BasePage> {
                           width: 1.0
                         )
                       ),
-                      height: 100,
+                      height: 50,
                       width: 100,
                       child: const Center(child: Text('Weapon'))),
                   ),
@@ -123,7 +143,7 @@ class _BasePageState extends State<BasePage> {
                           width: 1.0
                         )
                       ),
-                      height: 100,
+                      height: 50,
                       width: 100,
                       child: const Center(child: Text('Engine'))),
                   ),
@@ -132,7 +152,7 @@ class _BasePageState extends State<BasePage> {
             ),
             const SizedBox(height: 50,),
             //choose a missions for your robot, like capture bases, destroy enemies
-            if (isAIInstalled) Container(
+            if (true) Container(
               width: 204,
               height: 100,
               decoration: BoxDecoration(
@@ -201,17 +221,11 @@ class _BasePageState extends State<BasePage> {
             if (isEngineInstalled) ElevatedButton(onPressed: () {
               //launch the robots production
               int level = (isAIInstalled ? 1 : 0) + (isWeaponInstalled ? 1 : 0) + 1;
-              MyBot bot = MyBot(baseX: widget.base.baseX, baseY: widget.base.baseY, speedX: 0, speedY: 0, level: 1);
-              //if isCaptureBases is true, then we want to find nearest neutral or enemy base and set it as target
-              if (isToCaptureBases) {
-                //find nearest neutral or enemy base
-                Base? nearestBase = findNearestNotMyBase(forBot: bot) as Base?;
-                if (nearestBase != null) {
-                  //set target
-                  bot.target = nearestBase;
-                  //bot.targetY = nearestBase.baseY;
-                }
-              }
+              MyBot bot = MyBot(baseX: widget.base.baseX, baseY: widget.base.baseY, speedX: 0, speedY: 0, level: level);
+              bot.isAIInstalled = isAIInstalled;
+              bot.isWeaponInstalled = isWeaponInstalled;
+              bot.isToCaptureBases = isToCaptureBases;
+              bot.isToDestroyEnemies = isToDestroyEnemies;
               heap.add(bot);
               myBlocks -= level;
               Navigator.of(context).pop();

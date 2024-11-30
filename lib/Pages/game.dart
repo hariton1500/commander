@@ -75,11 +75,11 @@ class _GameState extends State<Game> {
           ...heap.whereType<EnemyBot>().map((e) => Positioned(
             left: e.baseX - e.radius / 2,
             top: e.baseY - e.radius / 2,
-            child: TapRegion(
-              onTapInside: (event) {
+            child: InkWell(
+              onTap: () {
                 //print('inside');
-                targetElement = e;
-                target = Offset(e.baseX, e.baseY);
+                //targetElement = e;
+                //target = Offset(e.baseX, e.baseY);
               },
               child: e.widget) ,)),
           //player status line at bottom of screen
@@ -91,7 +91,7 @@ class _GameState extends State<Game> {
   
   update() {
     //check for win
-    print('check for win');
+    //print('check for win');
     if (myBasesCount == heap.where((element) => element.type == Types.base).length) {
       timer?.cancel();
       print('win');
@@ -193,15 +193,15 @@ class _GameState extends State<Game> {
       bottom: 0,
       child: Container(
         width: MediaQuery.sizeOf(context).width,
-        height: 50,
+        height: 30,
         color: Colors.grey,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text('Blocks: ${myBlocks.ceil()}'),
-            Text('Bots: ${heap.where((element) => element.type == Types.mybot).length}'),
-            Text('Captured Bases: $myBasesCount'),
-            Text('All bases: ${heap.where((element) => element.type == Types.base).length}'),
+            Text('Bots: ${heap.whereType<MyBot>().length}'),
+            Text('Captured Bases: $myBasesCount / ${heap.whereType<Base>().length}'),
+            //Text('All bases: ${heap.where((element) => element.type == Types.base).length}'),
           ],
         ),
       ),
