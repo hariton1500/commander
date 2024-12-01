@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commander/Models/element.dart';
 import 'package:commander/Pages/base.dart';
 import 'package:commander/Pages/mybot.dart';
+import 'package:commander/Pages/start.dart';
 import 'package:commander/Updates/addtoshootingmap.dart';
 import 'package:commander/Updates/enemybots.dart';
 import 'package:commander/Updates/mybots.dart';
@@ -26,6 +27,7 @@ class _GameState extends State<Game> {
   Offset? center, target, movingCenter;
   MapElement? targetElement;
   int get myBasesCount => heap.where((element) => element is Base && element.baseStatus == BaseStatus.mine).length;
+  int get enemyBasesCount => heap.where((element) => element is Base && element.baseStatus == BaseStatus.enemies).length;
 
   @override
   void initState() {
@@ -83,6 +85,10 @@ class _GameState extends State<Game> {
                 //target = Offset(e.baseX, e.baseY);
               },
               child: e.widget) ,)),
+          ...heap.whereType<Rocket>().map((e) => Positioned(
+            left: e.baseX - e.radius / 2,
+            top: e.baseY - e.radius / 2,
+            child: e.widget ,)),
           //player status line at bottom of screen
           statusWidget()
         ],
@@ -96,16 +102,30 @@ class _GameState extends State<Game> {
     if (myBasesCount == heap.where((element) => element.type == Types.base).length) {
       timer?.cancel();
       print('win');
+      //make alert dialog with win data
+      var winAlert = AlertDialog(
+        title: const Text('You win! Congratulations!'),
+        content: Text('Time to win: ${ticks * 1/100} sec.'),
+        actions: [
+          ElevatedButton(onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const StartPage()));
+          }, child: const Text('Ok'))
+        ],
+      );
+      showDialog(context: context, builder: (context) => winAlert);
       return;
     }
     //calculate blocks income
     myBlocks += (myBasesCount / 5000);
+    enemyBlocks += (enemyBasesCount / 5000);
 
     //update my bots movement
     myBotsUpdate();
 
     //update enemy bots movement
     enemyBotsUpdate();
+    createEnemyBots();
 
     //shooting logic
     //check if my bot is close to enemy bot
@@ -113,65 +133,6 @@ class _GameState extends State<Game> {
     shooting();
     updateRockets();
   }
-
-  /*
-  widgetOfElement(MapElement e) {
-    switch (e.type) {
-      case Types.wall:
-        return Container(
-          width: e.radius.toDouble(),
-          height: e.radius.toDouble(),
-          //color: Colors.grey,
-          decoration: BoxDecoration(
-            color: Colors.yellow,
-            border: Border.all(
-              color: Colors.green
-            )
-          ),
-        );
-      case Types.base:
-        return InkWell(
-          onTap: () {
-            if (e.baseStatus == BaseStatus.mine) Navigator.of(context).push(MaterialPageRoute(builder: (context) => BasePage(base: e)));
-          },
-          child: Container(
-            width: e.radius.toDouble(),
-            height: e.radius.toDouble(),
-            //color: Colors.white,
-            decoration: BoxDecoration(
-              color: getColor(e),
-              border: Border.all(
-                color: Colors.black,
-                width: 2.0
-              )
-            ),
-          ),
-        );
-      case Types.mybot:
-        return InkWell(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBotPage(bot: e)));
-          },
-          child: Container(
-            width: e.radius.toDouble(),
-            height: e.radius.toDouble(),
-            color: Colors.green,
-          ),
-        );
-      case Types.enemybot:
-        return Container(
-          width: e.radius.toDouble(),
-          height: e.radius.toDouble(),
-          color: Colors.red,
-        );
-      case Types.rocket:
-        return Container(
-          width: e.radius.toDouble(),
-          height: e.radius.toDouble(),
-          color: Colors.blue,
-        );
-    }
-  }*/
   
   centerPointWidget() {
     return Positioned(
@@ -200,8 +161,8 @@ class _GameState extends State<Game> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Blocks: ${myBlocks.ceil()}'),
-            Text('Bots: ${heap.whereType<MyBot>().length}'),
+            Text('Blocks: ${myBlocks.ceil()} / ${enemyBlocks.ceil()}'),
+            Text('Bots: ${heap.whereType<MyBot>().length} / ${heap.whereType<EnemyBot>().length}'),
             Text('Captured Bases: $myBasesCount / ${heap.whereType<Base>().length}'),
             //Text('All bases: ${heap.where((element) => element.type == Types.base).length}'),
           ],

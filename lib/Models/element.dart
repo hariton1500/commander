@@ -46,7 +46,7 @@ class Bot extends MapElement {
   bool isWeaponInstalled;
   bool isToCaptureBases;
   bool isToDestroyEnemies;
-  MapElement? target;
+  Base? captureTarget;
   Bot? shootTarget;
 //  static const Color botColor = Colors.grey;
   Bot({required baseX, required baseY, required speedX, required speedY, required this.isAIInstalled, required this.isWeaponInstalled, required this.isToCaptureBases, required this.isToDestroyEnemies, required level}) : super(baseX: baseX, baseY: baseY, speedX: botSpeed, speedY: botSpeed, level: 1, type: Types.mybot, radius: 10);
@@ -92,8 +92,8 @@ class Rocket extends MapElement {
   Bot botTarget;
   bool isCollided = false;
   Widget get widget => Container(
-          width: 2,
-          height: 2,
+          width: 3,
+          height: 3,
           color: Colors.blue,
         );
   Rocket({required this.botShooter, required this.botTarget}) : super(baseX: botShooter.baseX, baseY: botShooter.baseY, speedX: 1, speedY: 0, level: 1, type: Types.rocket, radius: 2);

@@ -1,8 +1,6 @@
 import 'dart:math';
-
 import 'package:commander/Models/element.dart';
 import 'package:commander/Pages/game.dart';
-import 'package:commander/assets/maps/maps.dart';
 import 'package:commander/globals.dart';
 import 'package:flutter/material.dart';
 
@@ -68,9 +66,17 @@ class _StartPageState extends State<StartPage> {
                 return Base(baseX: x, baseY: y, level: 3, baseStatus: BaseStatus.neutral, isProducingBotsPermanently: false);
               });
               heap.addAll(bases);
+              MyBot mybot = MyBot(baseX: 50, baseY: 50, speedX: botSpeed, speedY: botSpeed, level: 1);
+              mybot.isAIInstalled = true;
+              mybot.isWeaponInstalled = true;
+              mybot.isToCaptureBases = true;
+              mybot.isToDestroyEnemies = true;
               heap.add(mybot);
               EnemyBot enemybot = EnemyBot(baseX: MediaQuery.of(context).size.width - 50, baseY: MediaQuery.of(context).size.height - 50, speedX: botSpeed, speedY: botSpeed, level: 1);
+              enemybot.isAIInstalled = true;
+              enemybot.isWeaponInstalled = true;
               enemybot.isToCaptureBases = true;
+              enemybot.isToDestroyEnemies = true;
               heap.add(enemybot);
             
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Game()));

@@ -7,13 +7,13 @@ import 'package:commander/helpers.dart';
 myBotsUpdate() {
   heap.whereType<MyBot>().forEach((mybot) {
     //find target for bot whose target is null
-    if (mybot.isToCaptureBases && mybot.target == null) {
-      print('start find base to capture for bot ${mybot.hashCode}');
+    if (mybot.isToCaptureBases && mybot.captureTarget == null) {
+      //print('start find base to capture for bot ${mybot.hashCode}');
       //find nearest base
       Base? nearestBase = (!captureMyBotsTargetsMap.containsKey(mybot) ? findNearestNotMyBase(forBot: mybot) : null) as Base?;
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
-        mybot.target = nearestBase;
+        mybot.captureTarget = nearestBase;
         //mybot.targetY = nearestBase.baseY;
         captureMyBotsTargetsMap[mybot] = nearestBase;
         print(captureMyBotsTargetsMap);
@@ -22,13 +22,13 @@ myBotsUpdate() {
       //mybot.isToCaptureBases = false;
     }
     //update bots movements if it has target
-    if (mybot.target != null) {
-      if (mybot.baseX.round() != mybot.target!.baseX.round() || mybot.baseY.round() != mybot.target!.baseY.round()) {
+    if (mybot.captureTarget != null) {
+      if (mybot.baseX.round() != mybot.captureTarget!.baseX.round() || mybot.baseY.round() != mybot.captureTarget!.baseY.round()) {
         //print('bot target is ${mybot.target?.baseX}, ${mybot.target?.baseY}');
         //calculate distance to target
         //double distance = sqrt(pow(mybot.baseX - mybot.target!.baseX, 2) + pow(mybot.baseY - mybot.target!.baseY, 2));
         //calculate angle to target
-        double angle = atan2(mybot.target!.baseY - mybot.baseY, mybot.target!.baseX - mybot.baseX);
+        double angle = atan2(mybot.captureTarget!.baseY - mybot.baseY, mybot.captureTarget!.baseX - mybot.baseX);
         //calculate speed
         double speed = botSpeed;
         //calculate dx and dy
@@ -40,12 +40,12 @@ myBotsUpdate() {
         //if bot is close to target, set target to null
       } else {
         //set target base status to captured
-        (captureMyBotsTargetsMap[mybot] as Base).baseStatus = BaseStatus.mine;
+        captureMyBotsTargetsMap[mybot]?.baseStatus = BaseStatus.mine;
         //remove bot from botsTargetsMap
         captureMyBotsTargetsMap.remove(mybot);
         print(captureMyBotsTargetsMap);
         //set target to null
-        mybot.target = null;
+        mybot.captureTarget = null;
       }
     }
   });

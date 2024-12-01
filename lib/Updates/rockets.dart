@@ -6,11 +6,12 @@ import 'package:commander/globals.dart';
 
 //update rockets movements function
 void updateRockets() {
-  List<Rocket> toDelete = [];
+  List<MapElement> toDelete = [];
   for (var rocket in heap.whereType<Rocket>()) {
     if (rocket.baseX < 0 || rocket.baseX > 1000 || rocket.baseY < 0 || rocket.baseY > 1000) {
       //heap.remove(rocket);
       toDelete.add(rocket);
+      rocket.botShooter.shootTarget = null;
       rocketsMyBotsMap.remove(rocket.botShooter);
       rocketsEnemyBotsMap.remove(rocket.botShooter);
     } else {
@@ -28,18 +29,25 @@ void updateRockets() {
       //check if rocket is close to target
       if (sqrt(pow(rocket.baseX - rocket.botTarget.baseX, 2) + pow(rocket.baseY - rocket.botTarget.baseY, 2)) < 1) {
         //remove rocket from heap
-        heap.remove(rocket);
+        toDelete.add(rocket);
+        //heap.remove(rocket);
         //remove rocket from maps
+        rocket.botShooter.shootTarget = null;
+        shootingMyBotEnemyBotMap.remove(rocket.botShooter);
+        shootingEnemyBotMyBotMap.remove(rocket.botShooter);
+        captureEnemybotsTargetsMap.remove(rocket.botShooter);
+        captureMyBotsTargetsMap.remove(rocket.botShooter);
         rocketsMyBotsMap.remove(rocket.botShooter);
         rocketsEnemyBotsMap.remove(rocket.botShooter);
         //destroy bot target
-        heap.remove(rocket.botTarget);
+        toDelete.add(rocket.botTarget);
+        //heap.remove(rocket.botTarget);
         
       }
     }
   }
-  for (var rocket in toDelete) {
-    heap.remove(rocket);
+  for (var element in toDelete) {
+    heap.remove(element);
   }
   toDelete.clear();
 }

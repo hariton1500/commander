@@ -4,8 +4,8 @@ import 'package:commander/Models/element.dart';
 import 'package:commander/globals.dart';
 
 addToShootingMap() {
-  heap.where((element) => element is MyBot && element.isToDestroyEnemies).forEach((mybot) {
-    //if this bot not shooting now find closed enemy bot in range 150
+  heap.where((element) => element is MyBot && element.isToDestroyEnemies && element.isWeaponInstalled).forEach((mybot) {
+    //if this bot not shooting now find closed enemy bot in range
     if (!shootingMyBotEnemyBotMap.containsKey(mybot)) {
       //find distance to nearest enemy bot
       double nearestDistance = double.infinity;
@@ -17,8 +17,8 @@ addToShootingMap() {
           nearestEnemyBot = enemybot as EnemyBot?;
         }
       });
-      //if nearest enemy bot is in range 150 shoot it
-      if (nearestEnemyBot != null && nearestDistance < 150) {
+      //if nearest enemy bot is in range shoot it
+      if (nearestEnemyBot != null && nearestDistance < fireDistance) {
         //add to shooting map
         shootingMyBotEnemyBotMap[mybot as MyBot] = nearestEnemyBot!;
         mybot.shootTarget = nearestEnemyBot;
@@ -26,8 +26,8 @@ addToShootingMap() {
     }
   });
   //do it for enemy bots
-  heap.where((element) => element is EnemyBot && element.isToDestroyEnemies).forEach((enemybot) {
-    //if this bot not shooting now find closed enemy bot in range 150
+  heap.where((element) => element is EnemyBot && element.isToDestroyEnemies && element.isWeaponInstalled).forEach((enemybot) {
+    //if this bot not shooting now find closed enemy bot in range
     if (!shootingEnemyBotMyBotMap.containsKey(enemybot)) {
       //find distance to nearest my bot
       double nearestDistance = double.infinity;
@@ -39,8 +39,8 @@ addToShootingMap() {
           nearestMyBot = mybot;
         }
       });
-      //if nearest enemy bot is in range 150 shoot it
-      if (nearestMyBot != null && nearestDistance < 150) {
+      //if nearest enemy bot is in range shoot it
+      if (nearestMyBot != null && nearestDistance < fireDistance) {
         //add to shooting map
         shootingEnemyBotMyBotMap[enemybot as EnemyBot] = nearestMyBot!;
         enemybot.shootTarget = nearestMyBot;
