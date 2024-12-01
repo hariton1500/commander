@@ -5,6 +5,7 @@ import 'package:commander/Pages/mybot.dart';
 import 'package:commander/Updates/addtoshootingmap.dart';
 import 'package:commander/Updates/enemybots.dart';
 import 'package:commander/Updates/mybots.dart';
+import 'package:commander/Updates/rockets.dart';
 import 'package:commander/Updates/shooting.dart';
 import 'package:commander/globals.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +111,7 @@ class _GameState extends State<Game> {
     //check if my bot is close to enemy bot
     addToShootingMap();
     shooting();
+    updateRockets();
   }
 
   /*

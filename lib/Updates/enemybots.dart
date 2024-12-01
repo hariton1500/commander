@@ -23,7 +23,7 @@ enemyBotsUpdate() {
     //update bots movements if it has target
     if (enemybot.target != null) {
       if (enemybot.baseX.round() != enemybot.target!.baseX.round() || enemybot.baseY.round() != enemybot.target!.baseY.round()) {
-        print('enemy bot target is ${enemybot.target}, ${enemybot.target}');
+        //print('enemy bot target is ${enemybot.target}, ${enemybot.target}');
         //calculate distance to target
         //double distance = sqrt(pow(enemybot.baseX - enemybot.target!.baseX, 2) + pow(enemybot.baseY - enemybot.target!.baseY, 2));
         //calculate angle to target

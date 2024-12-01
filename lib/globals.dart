@@ -4,6 +4,7 @@ List<MapElement> heap = [];
 
 double myBlocks = 1;
 double botSpeed = 0.1;
+double rocketSpeed = 0.5;
 
 Map<MyBot, EnemyBot> shootingMyBotEnemyBotMap = {};
 Map<EnemyBot, MyBot> shootingEnemyBotMyBotMap = {};

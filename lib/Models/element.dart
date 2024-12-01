@@ -47,6 +47,7 @@ class Bot extends MapElement {
   bool isToCaptureBases;
   bool isToDestroyEnemies;
   MapElement? target;
+  Bot? shootTarget;
 //  static const Color botColor = Colors.grey;
   Bot({required baseX, required baseY, required speedX, required speedY, required this.isAIInstalled, required this.isWeaponInstalled, required this.isToCaptureBases, required this.isToDestroyEnemies, required level}) : super(baseX: baseX, baseY: baseY, speedX: botSpeed, speedY: botSpeed, level: 1, type: Types.mybot, radius: 10);
 }
@@ -79,18 +80,23 @@ class EnemyBot extends Bot {
             height: 10,
             color: botColor,
           );
-  EnemyBot({required baseX, required baseY, required speedX, required speedY, required level}) : super(baseX: baseX, baseY: baseY, speedX: speedX, speedY: speedY, level: level, isAIInstalled: false, isWeaponInstalled: false, isToCaptureBases: false, isToDestroyEnemies: false,);
+  EnemyBot({required super.baseX, required super.baseY, required super.speedX, required super.speedY, required super.level}) : super(isAIInstalled: false, isWeaponInstalled: false, isToCaptureBases: false, isToDestroyEnemies: false);
+  @override
+  String toString() {
+    return 'EnemyBot($baseX, $baseY, $speedX, $speedY, $level, $isAIInstalled, $isWeaponInstalled, $isToCaptureBases, $isToDestroyEnemies)';
+  }
 }
 
 class Rocket extends MapElement {
-  MapElement bot;
+  Bot botShooter;
+  Bot botTarget;
   bool isCollided = false;
   Widget get widget => Container(
           width: 2,
           height: 2,
           color: Colors.blue,
         );
-  Rocket(this.bot) : super(baseX: bot.baseX, baseY: bot.baseY, speedX: 0, speedY: 0, level: 1, type: Types.rocket, radius: 2);
+  Rocket({required this.botShooter, required this.botTarget}) : super(baseX: botShooter.baseX, baseY: botShooter.baseY, speedX: 1, speedY: 0, level: 1, type: Types.rocket, radius: 2);
 }
 
 
