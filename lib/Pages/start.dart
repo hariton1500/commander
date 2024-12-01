@@ -56,6 +56,22 @@ class _StartPageState extends State<StartPage> {
                 }
               ),
             ),
+            Text('Rockets speed: $rocketSpeed'),
+            Padding(
+              padding: const EdgeInsets.only(left: 100, right: 100),
+              child: Slider(
+                value: rocketSpeed,
+                min: 0.3,
+                max: 1.5,
+                divisions: 12,
+                label: 'Rockets speed',
+                onChanged: (x) {
+                  setState(() {
+                    rocketSpeed = x;
+                  });
+                }
+              ),
+            ),
             TextButton(onPressed: () {
               //start game
               //load map
