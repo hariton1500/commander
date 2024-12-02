@@ -3,7 +3,20 @@ import 'package:commander/Models/element.dart';
 import 'package:commander/globals.dart';
 import 'package:flutter/material.dart';
 
-MapElement? findNearestNotMyBase({required MyBot forBot}) {
+double distance(MapElement a, MapElement b) {
+  return (a.place - b.place).distance;
+  //return sqrt(pow(a.baseX - b.baseX, 2) + pow(a.baseY - b.baseY, 2));
+}
+
+EnemyBot? findEnemyBotInRange({required MyBot forBot, required double range}) {
+  return heap.whereType<EnemyBot>().where((bot) => (forBot.place - bot.place).distance <= range).firstOrNull;
+}
+
+MyBot? findMyBotInRange({required EnemyBot forBot, required double range}) {
+  return heap.whereType<MyBot>().where((bot) => (forBot.place - bot.place).distance <= range).firstOrNull;
+}
+
+Base? findNearestNotMyBase({required MyBot forBot}) {
   Base? nearestBase;
   double nearestDistance = double.infinity;
   for (MapElement element in heap.where((element) => element is Base && element.baseStatus != BaseStatus.mine && !captureMyBotsTargetsMap.values.contains(element))) {
@@ -16,7 +29,7 @@ MapElement? findNearestNotMyBase({required MyBot forBot}) {
   return nearestBase;
 }
 
-MapElement? findNearestNotEnemyBase({required EnemyBot forBot}) {
+Base? findNearestNotEnemyBase({required EnemyBot forBot}) {
   Base? nearestBase;
   double nearestDistance = double.infinity;
   for (MapElement element in heap.where((element) => element is Base && element.baseStatus != BaseStatus.enemies && !captureEnemybotsTargetsMap.values.contains(element))) {

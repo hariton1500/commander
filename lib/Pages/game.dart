@@ -85,10 +85,12 @@ class _GameState extends State<Game> {
                 //target = Offset(e.baseX, e.baseY);
               },
               child: e.widget) ,)),
-          ...heap.whereType<Rocket>().map((e) => Positioned(
-            left: e.baseX - e.radius / 2,
-            top: e.baseY - e.radius / 2,
-            child: e.widget ,)),
+          //*
+          ...(heap.where((element) => element is Bot && element.shootTargetRocket != null).toList() as List<Bot>).map((e) => Positioned(
+            left: e.shootTargetRocket!.baseX - e.shootTargetRocket!.radius / 2,
+            top: e.shootTargetRocket!.baseY - e.shootTargetRocket!.radius / 2,
+            child: e.shootTargetRocket!.widget ,)),
+          //*/
           //player status line at bottom of screen
           statusWidget()
         ],
@@ -121,17 +123,24 @@ class _GameState extends State<Game> {
     enemyBlocks += (enemyBasesCount / 5000);
 
     //update my bots movement
-    myBotsUpdate();
+    //myBotsUpdate();
+    heap.whereType<MyBot>().forEach((element) {
+      element.update();
+    });
 
     //update enemy bots movement
-    enemyBotsUpdate();
+    //enemyBotsUpdate();
+    heap.whereType<EnemyBot>().forEach((element) {
+      element.update();
+    });
     createEnemyBots();
 
     //shooting logic
     //check if my bot is close to enemy bot
-    addToShootingMap();
-    shooting();
-    updateRockets();
+    //addToShootingMap();
+    //shooting();
+    //updateRockets();
+
   }
   
   centerPointWidget() {
