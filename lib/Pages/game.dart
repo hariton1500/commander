@@ -69,28 +69,21 @@ class _GameState extends State<Game> {
             top: e.baseY - e.radius / 2,
             child: InkWell(
               onTap: () {
-                //print('inside');
-                //targetElement = e;
-                //target = Offset(e.baseX, e.baseY);
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBotPage(bot: e)));
               },
               child: e.widget) ,)),
-          ...heap.whereType<EnemyBot>().map((e) => Positioned(
-            left: e.baseX - e.radius / 2,
-            top: e.baseY - e.radius / 2,
-            child: InkWell(
-              onTap: () {
-                //print('inside');
-                //targetElement = e;
-                //target = Offset(e.baseX, e.baseY);
-              },
-              child: e.widget) ,)),
-          //*
-          ...(heap.where((element) => element is Bot && element.shootTargetRocket != null).toList() as List<Bot>).map((e) => Positioned(
+          ...heap.whereType<MyBot>().where((bot) => bot.shootTargetRocket != null).map((e) => Positioned(
             left: e.shootTargetRocket!.baseX - e.shootTargetRocket!.radius / 2,
             top: e.shootTargetRocket!.baseY - e.shootTargetRocket!.radius / 2,
             child: e.shootTargetRocket!.widget ,)),
-          //*/
+          ...heap.whereType<EnemyBot>().map((e) => Positioned(
+            left: e.baseX - e.radius / 2,
+            top: e.baseY - e.radius / 2,
+            child: e.widget ,)),
+          ...heap.whereType<EnemyBot>().where((bot) => bot.shootTargetRocket != null).map((e) => Positioned(
+            left: e.shootTargetRocket!.baseX - e.shootTargetRocket!.radius / 2,
+            top: e.shootTargetRocket!.baseY - e.shootTargetRocket!.radius / 2,
+            child: e.shootTargetRocket!.widget ,)),
           //player status line at bottom of screen
           statusWidget()
         ],

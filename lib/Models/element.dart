@@ -215,6 +215,12 @@ class Rocket extends MapElement {
           color: Colors.blue,
         );
   Rocket({required this.botShooter, required this.botTarget}) : super(baseX: botShooter.baseX, baseY: botShooter.baseY, speedX: 1, speedY: 0, level: 1, type: Types.rocket, radius: 2);
+
+  @override
+  void update() {
+    //update position
+    moveTo(botTarget);
+  }
 }
 
 
