@@ -10,7 +10,7 @@ enemyBotsUpdate() {
     if (enemybot.isToCaptureBases && enemybot.captureTarget == null) {
       print('start find base to capture for bot ${enemybot.hashCode}');
       //find nearest base
-      Base? nearestBase = (!captureEnemybotsTargetsMap.containsKey(enemybot) ? findNearestNotEnemyBase(forBot: enemybot) : null) as Base?;
+      Base? nearestBase = (!captureEnemybotsTargetsMap.containsKey(enemybot) ? findNearestNotEnemyBase(forBot: enemybot) : null);
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
         enemybot.captureTarget = nearestBase;

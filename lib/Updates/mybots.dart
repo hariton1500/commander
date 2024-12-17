@@ -10,7 +10,7 @@ myBotsUpdate() {
     if (mybot.isToCaptureBases && mybot.captureTarget == null) {
       //print('start find base to capture for bot ${mybot.hashCode}');
       //find nearest base
-      Base? nearestBase = (!captureMyBotsTargetsMap.containsKey(mybot) ? findNearestNotMyBase(forBot: mybot) : null) as Base?;
+      Base? nearestBase = (!captureMyBotsTargetsMap.containsKey(mybot) ? findNearestNotMyBase(forBot: mybot) : null);
       //if nearestBase != null set target to nearest base
       if (nearestBase != null) {
         mybot.captureTarget = nearestBase;
